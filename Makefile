@@ -5,10 +5,9 @@ NAME	 := go-oracledb-test
 TARGET	 := bin/$(NAME)
 DIST_DIRS := find * -type d -exec
 SRCS	:= $(shell find . -type f -name '*.go')
-LDFLAGS := -ldflags="-s -X \"main.version=$(VERSION)\""
 
 $(TARGET): $(SRCS)
-	CGO_ENABLED=0 go build $(OPTS) $(LDFLAGS) -o bin/$(NAME) src/${NAME}.go
+	go build -o bin/$(NAME) src/${NAME}.go
 
 .PHONY: clean
 clean:
