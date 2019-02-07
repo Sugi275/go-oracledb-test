@@ -1,19 +1,32 @@
-FROM alpine:3.9
+FROM ubuntu:18.04 
 MAINTAINER sugimount <https://twitter.com/sugimount>
-
-# RUN adduser --uid 1000 -D go-oracledb
-# USER 1000:1000
 
 # set working directory
 WORKDIR /opt/oracle
 
+# package install
+RUN apt-get update && \
+    apt-get install -y wget unzip libaio1 && \
+    apt-get clean && \
+    rm -rf /var/lib/apt/lists/*
+
 # instant client
-COPY instantclient-basic-linux.x64-18.3.0.0.0dbru.zip /opt/oracle
-COPY instantclient-sdk-linux.x64-18.3.0.0.0dbru.zip /opt/oracle
-RUN unzip instantclient-basic-linux.x64-18.3.0.0.0dbru.zip && \
-    unzip instantclient-sdk-linux.x64-18.3.0.0.0dbru.zip && \
-    rm /opt/oracle/instantclient-basic-linux.x64-18.3.0.0.0dbru.zip && \
-    rm /opt/oracle/instantclient-sdk-linux.x64-18.3.0.0.0dbru.zip
+RUN wget https://github.com/Sugi275/go-oracledb-test/raw/master/instantclient-basic-linux.x64-18.3.0.0.0dbru.zip && \
+    unzip instantclient-basic-linux.x64-18.3.0.0.0dbru.zip && \
+    rm /opt/oracle/instantclient-basic-linux.x64-18.3.0.0.0dbru.zip
+
+# runtime linkpath
+COPY oracle-instantclient.conf /etc/ld.so.conf.d/oracle-instantclient.conf
+RUN ldconfig
+
+# Wallet
+COPY Wallet_tutorial1.zip /opt/oracle/instantclient_18_3/network/admin/Wallet_tutorial1.zip
+RUN cd /opt/oracle/instantclient_18_3/network/admin/ && \
+    unzip Wallet_tutorial1.zip
+
+# default user
+RUN adduser --uid 1000 go-oracledb
+USER 1000:1000
 
 # go binary
 COPY ./bin/go-oracledb-test /home/go-oracledb/go-oracledb-test
