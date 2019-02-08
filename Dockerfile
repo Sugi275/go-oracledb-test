@@ -20,16 +20,23 @@ COPY oracle-instantclient.conf /etc/ld.so.conf.d/oracle-instantclient.conf
 RUN ldconfig
 
 # Wallet
-COPY Wallet_tutorial1.zip /opt/oracle/instantclient_18_3/network/admin/Wallet_tutorial1.zip
-RUN cd /opt/oracle/instantclient_18_3/network/admin/ && \
-    unzip Wallet_tutorial1.zip
+# COPY Wallet_tutorial1.zip /opt/oracle/instantclient_18_3/network/admin/Wallet_tutorial1.zip
+# RUN cd /opt/oracle/instantclient_18_3/network/admin/ && \
+#     unzip Wallet_tutorial1.zip
 
-# default user
-RUN adduser --uid 1000 go-oracledb
-USER 1000:1000
+# user add
+RUN adduser --uid 1000 go-oracledb && \
+    chown go-oracledb: /opt/oracle/instantclient_18_3/network/admin
 
 # go binary
 COPY ./bin/go-oracledb-test /home/go-oracledb/go-oracledb-test
 
+# entrypoint shell
+COPY entrypoint.sh /home/go-oracledb/entrypoint.sh
+RUN chown go-oracledb: /home/go-oracledb/entrypoint.sh
+
+# default user
+USER 1000:1000
+
 EXPOSE 8080
-ENTRYPOINT ["/home/go-oracledb/go-oracledb-test"]
+ENTRYPOINT ["sh", "/home/go-oracledb/entrypoint.sh"]

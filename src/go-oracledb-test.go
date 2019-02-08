@@ -3,12 +3,17 @@ package main
 import (
     "database/sql"
     "fmt"
+    "os"
 
     _ "github.com/mattn/go-oci8"
 )
 
 func getDSN() string {
-    return "admin/nsfan824u789Fjfoijoj3098j@tutorial1_low" // user/name@host:port/sid
+    user := os.Getenv("atp_username")
+    passwd := os.Getenv("atp_password")
+    tsn := os.Getenv("atp_tsn")
+    connect := user + "/" + passwd + "@" + tsn
+    return connect
 }
 
 func testSelect(db *sql.DB) error {
