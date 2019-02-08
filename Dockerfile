@@ -19,11 +19,6 @@ RUN wget https://github.com/Sugi275/go-oracledb-test/raw/master/instantclient-ba
 COPY oracle-instantclient.conf /etc/ld.so.conf.d/oracle-instantclient.conf
 RUN ldconfig
 
-# Wallet
-# COPY Wallet_tutorial1.zip /opt/oracle/instantclient_18_3/network/admin/Wallet_tutorial1.zip
-# RUN cd /opt/oracle/instantclient_18_3/network/admin/ && \
-#     unzip Wallet_tutorial1.zip
-
 # user add
 RUN adduser --uid 1000 go-oracledb && \
     chown go-oracledb: /opt/oracle/instantclient_18_3/network/admin
